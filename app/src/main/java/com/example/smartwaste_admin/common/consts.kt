@@ -4,3 +4,5 @@ const val TRUCKS_PATH="trucks"
 const val USERS_PATH="users"
 
 const val ROUTES_PATH="routes"
+
+const val WORKER_PATH="worker"

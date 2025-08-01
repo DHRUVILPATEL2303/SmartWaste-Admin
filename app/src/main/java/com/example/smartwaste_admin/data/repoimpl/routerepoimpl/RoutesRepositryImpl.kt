@@ -8,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class RoutesRepositryImpl @Inject constructor(
@@ -25,7 +26,9 @@ class RoutesRepositryImpl @Inject constructor(
                 }
 
                 val routes = snapshot?.documents?.mapNotNull {
-                    it.toObject(RouteModel::class.java)
+                    it.toObject(RouteModel::class.java)?.copy(
+                        id = it.id
+                    )
                 } ?: emptyList()
 
                 trySend(ResultState.Success(routes))
@@ -53,5 +56,16 @@ class RoutesRepositryImpl @Inject constructor(
             }
 
         awaitClose { listenerRegistration.remove() }
+    }
+
+    override suspend fun addRoutes(route: RouteModel): ResultState<String> {
+
+        return try {
+            val documentReference = firestore.collection(ROUTES_PATH).document().set(route).await()
+            ResultState.Success("added successfully")
+        } catch (e: Exception) {
+            ResultState.Error(e.message ?: "Unknown error")
+
+        }
     }
 }

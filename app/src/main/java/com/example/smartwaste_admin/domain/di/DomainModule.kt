@@ -3,9 +3,11 @@ package com.example.smartwaste_admin.domain.di
 import com.example.smartwaste_admin.data.repoimpl.residencerepoimpl.ResidentRepositoryImpl
 import com.example.smartwaste_admin.data.repoimpl.routerepoimpl.RoutesRepositryImpl
 import com.example.smartwaste_admin.data.repoimpl.truckrepoimpl.TruckRepositryImpl
+import com.example.smartwaste_admin.data.repoimpl.workerrepoimpl.WorkersRepositryImpl
 import com.example.smartwaste_admin.domain.repo.residentrepo.ResidentRepository
 import com.example.smartwaste_admin.domain.repo.routesrepo.RoutesRepositry
 import com.example.smartwaste_admin.domain.repo.truckRepo.TrucksRepositry
+import com.example.smartwaste_admin.domain.repo.workerrepo.WorkersRepositry
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -29,6 +31,9 @@ abstract class DomainModule{
     @Binds
     abstract fun bindUseCase3(RepositryImpl: TruckRepositryImpl): TrucksRepositry
 
+    @Singleton
+    @Binds
+    abstract fun bindUseCase4(RepositryImpl: WorkersRepositryImpl): WorkersRepositry
 
 
 
