@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.smartwaste_admin.presentation.navigation.AppNavigation
 import com.example.smartwaste_admin.ui.theme.SmartWasteAdminTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,10 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartWasteAdminTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    AppNavigation()
                 }
             }
         }

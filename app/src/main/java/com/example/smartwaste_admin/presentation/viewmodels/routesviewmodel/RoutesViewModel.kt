@@ -7,12 +7,14 @@ import com.example.smartwaste_admin.data.models.RouteModel
 import com.example.smartwaste_admin.domain.usecases.routesusecases.AddRouteUseCase
 import com.example.smartwaste_admin.domain.usecases.routesusecases.GetAllRouteUseCase
 import com.example.smartwaste_admin.domain.usecases.routesusecases.GetRouteByIdUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class RoutesViewModel @Inject constructor(
     private val getAllRouteUseCase: GetAllRouteUseCase,
     private val getRouteByIdUseCase: GetRouteByIdUseCase,
