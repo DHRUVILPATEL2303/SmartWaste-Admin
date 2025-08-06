@@ -5,4 +5,6 @@ const val USERS_PATH="users"
 
 const val ROUTES_PATH="routes"
 
-const val WORKER_PATH="worker"
+const val WORKER_PATH="workers"
+
+const val AREA_PATH="areas"
