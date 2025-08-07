@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.smartwaste_admin.data.models.RouteModel
 import com.example.smartwaste_admin.data.models.TruckModel
+import com.example.smartwaste_admin.presentation.navigation.Routes
 import com.example.smartwaste_admin.presentation.viewmodels.routesviewmodel.RoutesViewModel
 import com.example.smartwaste_admin.presentation.viewmodels.truckViewModel.TruckViewModel
 
@@ -71,7 +72,7 @@ fun HomeScreenUI(
                 modifier = Modifier.padding(end = 16.dp, bottom = 16.dp)
             ) {
                 FloatingActionButton(
-                    onClick = { navController.navigate("add_area") },
+                    onClick = { navController.navigate(Routes.AddAreaScreen) },
                     containerColor = Color.White,
                     contentColor = Color(0xFF0288D1),
                     modifier = Modifier.shadow(8.dp, RoundedCornerShape(16.dp))
@@ -79,7 +80,7 @@ fun HomeScreenUI(
                     Icon(Icons.Default.LocationOn, contentDescription = "Add Area")
                 }
                 FloatingActionButton(
-                    onClick = { navController.navigate("add_route") },
+                    onClick = { navController.navigate(Routes.AddRouteScreen) },
                     containerColor = Color.White,
                     contentColor = Color(0xFF0288D1),
                     modifier = Modifier.shadow(8.dp, RoundedCornerShape(16.dp))
@@ -87,7 +88,7 @@ fun HomeScreenUI(
                     Icon(Icons.Default.Map, contentDescription = "Add Route")
                 }
                 FloatingActionButton(
-                    onClick = { navController.navigate("add_truck") },
+                    onClick = { navController.navigate(Routes.AddTruckScreen) },
                     containerColor = Color.White,
                     contentColor = Color(0xFF0288D1),
                     modifier = Modifier.shadow(8.dp, RoundedCornerShape(16.dp))
@@ -226,7 +227,7 @@ fun HomeScreenUI(
                             items(routes) { route ->
                                 RouteItem(
                                     route = route,
-                                    onClick = { navController.navigate("route_details/${route.id}") }
+                                    onClick = { navController.navigate(Routes.RouteDetailsScren(routeId = route.id)) }
                                 )
                             }
                         }
@@ -277,16 +278,7 @@ fun TruckItem(truck: TruckModel, onClick: () -> Unit) {
                         color = Color.Black
                     )
                 )
-                Text(
-                    "Route ID: ${truck.routeId}",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
-                )
-                Text(
-                    "Status: ${truck.status}",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = if (truck.status == "Active") Color(0xFF4CAF50) else Color(0xFFB00020)
-                    )
-                )
+
             }
         }
     }

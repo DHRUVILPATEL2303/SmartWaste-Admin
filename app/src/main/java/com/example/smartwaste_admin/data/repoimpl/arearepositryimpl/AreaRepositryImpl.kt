@@ -6,6 +6,7 @@ import com.example.smartwaste_admin.data.di.DataModule_ProvideFirebaseFireStoreF
 import com.example.smartwaste_admin.data.models.AreaModel
 import com.example.smartwaste_admin.domain.repo.arearepo.AreaRepositry
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
@@ -36,6 +37,11 @@ class AreaRepositryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             trySend(ResultState.Error(e.message ?: "Unknown error"))
+        }
+
+
+        awaitClose {
+            close()
         }
     }
 

@@ -23,4 +23,13 @@ sealed class Routes {
 
     @Serializable
     object AllResidentScreen
+
+    @Serializable
+    object AddAreaScreen
+
+
+    @Serializable
+    data class RouteDetailsScren(
+        val routeId: String
+    )
 }

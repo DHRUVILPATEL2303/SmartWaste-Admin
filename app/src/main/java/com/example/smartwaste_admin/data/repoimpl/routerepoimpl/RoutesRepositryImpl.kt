@@ -68,4 +68,14 @@ class RoutesRepositryImpl @Inject constructor(
 
         }
     }
+
+    override suspend fun updateRoutes(route: RouteModel): ResultState<String> {
+        return try {
+            val documentReference =
+                firestore.collection(ROUTES_PATH).document(route.id).set(route).await()
+            ResultState.Success("updated successfully")
+        } catch (e: Exception) {
+            ResultState.Error(e.message ?: "Unknown error")
+        }
+    }
 }

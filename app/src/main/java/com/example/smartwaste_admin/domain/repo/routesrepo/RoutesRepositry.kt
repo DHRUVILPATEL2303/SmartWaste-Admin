@@ -11,4 +11,6 @@ interface RoutesRepositry {
     suspend fun getRouteById(id : String) : Flow<ResultState<RouteModel>>
 
     suspend fun addRoutes(route : RouteModel) : ResultState<String>
+
+    suspend fun updateRoutes(route : RouteModel) : ResultState<String>
 }

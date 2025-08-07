@@ -7,6 +7,7 @@ import com.example.smartwaste_admin.data.models.RouteModel
 import com.example.smartwaste_admin.domain.usecases.routesusecases.AddRouteUseCase
 import com.example.smartwaste_admin.domain.usecases.routesusecases.GetAllRouteUseCase
 import com.example.smartwaste_admin.domain.usecases.routesusecases.GetRouteByIdUseCase
+import com.example.smartwaste_admin.domain.usecases.routesusecases.UpdateRouteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ class RoutesViewModel @Inject constructor(
     private val getAllRouteUseCase: GetAllRouteUseCase,
     private val getRouteByIdUseCase: GetRouteByIdUseCase,
     private val addRouteUseCase: AddRouteUseCase,
+    private val updateRouteUseCase: UpdateRouteUseCase
 ) : ViewModel() {
 
     private val _allRoutesState = MutableStateFlow(CommonRoutesState<List<RouteModel>>())
@@ -30,6 +32,8 @@ class RoutesViewModel @Inject constructor(
     private val _addRouteState = MutableStateFlow(CommonRoutesState<String>())
     val addRouteState = _addRouteState.asStateFlow()
 
+    private val _updateRouteState = MutableStateFlow(CommonRoutesState<String>())
+    val updateRouteState = _updateRouteState.asStateFlow()
 
     fun getAllRoutes() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -96,6 +100,32 @@ class RoutesViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun updateRoute(routeModel: RouteModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            _updateRouteState.value = CommonRoutesState(isLoading = true)
+            val result = updateRouteUseCase.updateRouteUseCase(routeModel)
+
+            when (result) {
+
+                is ResultState.Success -> {
+                    _updateRouteState.value = CommonRoutesState(success = result.data, isLoading = false)
+                }
+
+                is ResultState.Loading -> {
+                    _updateRouteState.value = CommonRoutesState(isLoading = true)
+                }
+
+                is ResultState.Error -> {
+                    _updateRouteState.value = CommonRoutesState(error = result.error, isLoading = false)
+                }
+
+            }
+
+        }
+
     }
 
 
