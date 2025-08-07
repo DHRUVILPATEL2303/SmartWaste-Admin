@@ -10,3 +10,5 @@ const val WORKER_PATH="workers"
 const val AREA_PATH="areas"
 
 const val HOLIDAY_PATH="holidays"
+
+const val ROUTE_PROGRESS_PATH = "route_progress"
