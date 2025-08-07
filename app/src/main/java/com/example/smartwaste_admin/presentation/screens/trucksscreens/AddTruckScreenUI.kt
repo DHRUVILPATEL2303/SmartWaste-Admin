@@ -34,10 +34,7 @@ fun AddTruckScreenUI(
         if (addTruckState.success != null) {
             Toast.makeText(context, "Truck Added Successfully", Toast.LENGTH_SHORT).show()
             truckNumber = ""
-            area = ""
-            date = ""
-            routeId = ""
-            navController.popBackStack() // Navigate back after successful add
+
         } else if (addTruckState.error.isNotEmpty()) {
             Toast.makeText(context, "Error: ${addTruckState.error}", Toast.LENGTH_SHORT).show()
         }

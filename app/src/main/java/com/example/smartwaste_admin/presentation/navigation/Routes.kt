@@ -32,4 +32,20 @@ sealed class Routes {
     data class RouteDetailsScren(
         val routeId: String
     )
+
+
+    @Serializable
+    object AssignedTrucksScreen
+
+    @Serializable
+    object HolidaysScreen
+
+    @Serializable
+    object NotificationsScreen
+
+    @Serializable
+    object ExtraServicesScreen
+
+    @Serializable
+    object AddHolidayScreen
 }

@@ -34,7 +34,7 @@ fun AddRouteScreenUI(
     val addRouteState = routesViewModel.addRouteState.collectAsState().value
     val areaState = areaViewModel.allAreaState.collectAsState().value
 
-    // Force fetch areas on screen load
+
     LaunchedEffect(Unit) {
         areaViewModel.getAllAreas()
     }
