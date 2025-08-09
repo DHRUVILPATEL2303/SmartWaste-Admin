@@ -1,10 +1,12 @@
 package com.example.smartwaste_admin.data.models
 
-
-
+data class AreaInfo(
+    val areaId: String = "",
+    val areaName: String = ""
+)
 data class RouteModel(
-    val id: String = "",             // Unique ID for the route
-    val name: String = "",           // Human-readable name (e.g., "Route A - North Zone")
-    val areaList: List<String> = emptyList(), // List of areas/localities this route covers
-    val isActive: Boolean = true     // To disable a route if needed
+    val id: String = "",
+    val name: String = "",
+    val areaList: List<AreaInfo> = emptyList(),
+    val isActive: Boolean = true
 )

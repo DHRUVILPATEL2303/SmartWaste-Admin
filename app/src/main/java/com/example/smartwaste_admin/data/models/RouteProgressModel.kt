@@ -2,16 +2,19 @@ package com.example.smartwaste_admin.data.models
 
 
 data class RouteProgressModel(
-    val truckId: String = "",
     val routeId: String = "",
-    val completedAreas: List<AreaMap> = emptyList(),
     val date: String = "",
-
+    val assignedCollectorId: String = "",
+    val assignedDriverId: String = "",
+    val assignedTruckId: String = "",
+    val areaProgress: List<AreaProgress> = emptyList(),
+    val isRouteCompleted: Boolean = false,
+    val lastUpdated: Long = System.currentTimeMillis()
 )
 
-data class AreaMap(
-
-val areadId:String="",
-val areaName:String="",
-val areaCompleted : Boolean = false
+data class AreaProgress(
+    val areaId: String = "",
+    val areaName: String = "",
+    val isCompleted: Boolean = false,
+    val completedAt: Long? = null
 )

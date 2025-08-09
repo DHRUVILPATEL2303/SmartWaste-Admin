@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.smartwaste_admin.data.models.AreaInfo
 import com.example.smartwaste_admin.data.models.AreaModel
 import com.example.smartwaste_admin.presentation.viewmodels.areaviewmodel.AreaViewModel
 import com.example.smartwaste_admin.presentation.viewmodels.routesviewmodel.RoutesViewModel
@@ -46,6 +47,9 @@ fun RouteDetailsScreenUI(
         areaViewModel.getAllAreas()
     }
 
+    val areaList: List<AreaInfo>
+
+    val allAreas = routeState.success?.areaList.orEmpty()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -138,19 +142,18 @@ fun RouteDetailsScreenUI(
                     Text("Areas Covered:", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    val allAreas = route.areaList.distinct()
+                    val allAreas = route.areaList.distinctBy { it.areaId }
 
                     if (allAreas.isEmpty()) {
                         Text("No areas assigned", style = MaterialTheme.typography.bodyMedium)
                     } else {
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             items(allAreas.size) { index ->
-                                val areaName = allAreas[index]
-                                AreaTag(areaName = areaName)
+                                val areaInfo = allAreas[index]
+                                AreaTag(areaName = areaInfo.areaName)
                             }
                         }
                     }
-
                     Spacer(modifier = Modifier.height(24.dp))
                     Divider()
                     Spacer(modifier = Modifier.height(16.dp))
@@ -166,7 +169,7 @@ fun RouteDetailsScreenUI(
                         Text("Failed to load areas: ${allAreaState.error}")
                     } else {
                         val availableAreas = allAreaState.success.orEmpty()
-                            .filter { it.areaName !in allAreas }
+                            .filter { area -> allAreas.none { it.areaId == area.areadId } }
 
                         ExposedDropdownMenuBox(
                             expanded = expanded,
@@ -225,8 +228,11 @@ fun RouteDetailsScreenUI(
                                     TextButton(
                                         onClick = {
                                             selectedArea?.let { area ->
-                                                if (area.areaName !in route.areaList) {
-                                                    val updatedAreaList = route.areaList + area.areaName
+                                                if (route.areaList.none { it.areaId == area.areadId }) {
+                                                    val updatedAreaList = route.areaList + AreaInfo(
+                                                        areaId = area.areadId,
+                                                        areaName = area.areaName
+                                                    )
                                                     val updatedRoute = route.copy(areaList = updatedAreaList, id = routeId)
                                                     viewModel.updateRoute(updatedRoute)
                                                 }

@@ -2,7 +2,10 @@ package com.example.smartwaste_admin.data.repoimpl.routerepoimpl
 
 import com.example.smartwaste_admin.common.ROUTES_PATH
 import com.example.smartwaste_admin.common.ResultState
+import com.example.smartwaste_admin.data.models.AreaInfo
+import com.example.smartwaste_admin.data.models.AreaProgress
 import com.example.smartwaste_admin.data.models.RouteModel
+import com.example.smartwaste_admin.data.models.RouteProgressModel
 import com.example.smartwaste_admin.domain.repo.routesrepo.RoutesRepositry
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
@@ -59,23 +62,84 @@ class RoutesRepositryImpl @Inject constructor(
     }
 
     override suspend fun addRoutes(route: RouteModel): ResultState<String> {
-
         return try {
-            val documentReference = firestore.collection(ROUTES_PATH).document().set(route).await()
-            ResultState.Success("added successfully")
+            val docRef = firestore.collection(ROUTES_PATH).document()
+            val routeWithId = route.copy(id = docRef.id)
+            docRef.set(routeWithId).await()
+
+            createInitialRouteProgress(routeWithId)
+
+            ResultState.Success("Route and progress created successfully")
         } catch (e: Exception) {
             ResultState.Error(e.message ?: "Unknown error")
-
         }
     }
 
     override suspend fun updateRoutes(route: RouteModel): ResultState<String> {
         return try {
-            val documentReference =
-                firestore.collection(ROUTES_PATH).document(route.id).set(route).await()
-            ResultState.Success("updated successfully")
+            firestore.collection(ROUTES_PATH).document(route.id).set(route).await()
+
+
+            updateRouteProgressFromRoute(route)
+
+            ResultState.Success("Route and progress updated successfully")
         } catch (e: Exception) {
             ResultState.Error(e.message ?: "Unknown error")
+        }
+    }
+
+    private suspend fun createInitialRouteProgress(route: RouteModel) {
+        val progress = RouteProgressModel(
+            routeId = route.id,
+            date = getTodayDateString(),
+            assignedCollectorId = "",
+            assignedTruckId = "",
+            assignedDriverId = "",
+            areaProgress = route.areaList.map { areaInfo ->
+                AreaProgress(
+                    areaId = areaInfo.areaId,
+                    areaName = areaInfo.areaName,
+                    isCompleted = false
+                )
+            },
+            isRouteCompleted = false,
+            lastUpdated = System.currentTimeMillis()
+        )
+
+        firestore.collection("route_progress").document(route.id).set(progress).await()
+    }
+
+    private fun getTodayDateString(): String {
+        val formatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        return formatter.format(java.util.Date())
+    }
+
+    private suspend fun updateRouteProgressFromRoute(updatedRoute: RouteModel) {
+        val progressRef = firestore.collection("route_progress").document(updatedRoute.id)
+        val snapshot = progressRef.get().await()
+
+        if (snapshot.exists()) {
+            val oldProgress = snapshot.toObject(RouteProgressModel::class.java)
+
+            if (oldProgress != null) {
+                val updatedAreasProgress = updatedRoute.areaList.map { areaInfo ->
+                    val existingArea = oldProgress.areaProgress.find { it.areaId == areaInfo.areaId }
+                    existingArea ?: AreaProgress(
+                        areaId = areaInfo.areaId,
+                        areaName = areaInfo.areaName,
+                        isCompleted = false
+                    )
+                }
+
+                val newProgress = oldProgress.copy(
+                    areaProgress = updatedAreasProgress,
+                    lastUpdated = System.currentTimeMillis()
+                )
+
+                progressRef.set(newProgress).await()
+            }
+        } else {
+            createInitialRouteProgress(updatedRoute)
         }
     }
 }

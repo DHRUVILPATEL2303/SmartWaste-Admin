@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.smartwaste_admin.data.models.AreaInfo
 import com.example.smartwaste_admin.data.models.RouteModel
 import com.example.smartwaste_admin.presentation.viewmodels.areaviewmodel.AreaViewModel
 import com.example.smartwaste_admin.presentation.viewmodels.routesviewmodel.RoutesViewModel
@@ -29,7 +30,7 @@ fun AddRouteScreenUI(
     navController: NavHostController
 ) {
     var routeName by remember { mutableStateOf("") }
-    val selectedAreas = remember { mutableStateListOf<String>() }
+    val selectedAreas = remember { mutableStateListOf<AreaInfo>() }
 
     val addRouteState = routesViewModel.addRouteState.collectAsState().value
     val areaState = areaViewModel.allAreaState.collectAsState().value
@@ -113,22 +114,29 @@ fun AddRouteScreenUI(
                             .weight(1f)
                     ) {
                         items(areaState.success) { area ->
-                            val isSelected = selectedAreas.contains(area.areaName)
+                            val isSelected = selectedAreas.any { it.areaId == area.areadId }
+
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        if (isSelected) selectedAreas.remove(area.areaName)
-                                        else selectedAreas.add(area.areaName)
+                                        if (isSelected) {
+                                            selectedAreas.removeAll { it.areaId == area.areadId }
+                                        } else {
+                                            selectedAreas.add(AreaInfo(area.areadId, area.areaName))
+                                        }
                                     }
                                     .padding(8.dp)
                             ) {
                                 Checkbox(
                                     checked = isSelected,
-                                    onCheckedChange = {
-                                        if (it) selectedAreas.add(area.areaName)
-                                        else selectedAreas.remove(area.areaName)
+                                    onCheckedChange = { checked ->
+                                        if (checked) {
+                                            selectedAreas.add(AreaInfo(area.areadId, area.areaName))
+                                        } else {
+                                            selectedAreas.removeAll { it.areaId == area.areadId }
+                                        }
                                     },
                                     colors = CheckboxDefaults.colors(
                                         checkedColor = primary,
@@ -149,8 +157,15 @@ fun AddRouteScreenUI(
                     if (routeName.isNotBlank() && selectedAreas.isNotEmpty()) {
                         val newRoute = RouteModel(
                             name = routeName.trim(),
-                            areaList = selectedAreas.toList()
+                            areaList = selectedAreas.map { selectedArea ->
+                                AreaInfo(
+                                    areaId = selectedArea.areaId,
+                                    areaName = selectedArea.areaName
+                                )
+                            }
                         )
+
+                        // Call ViewModel function to save route
                         routesViewModel.addRoute(newRoute)
                     }
                 },

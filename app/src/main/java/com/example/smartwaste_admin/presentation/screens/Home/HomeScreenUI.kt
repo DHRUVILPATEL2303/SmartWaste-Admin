@@ -355,7 +355,7 @@ fun RouteItem(route: RouteModel, onClick: () -> Unit) {
                     )
                 )
                 Text(
-                    "Areas: ${route.areaList.joinToString()}",
+                    "Areas: ${route.areaList.joinToString { it.areaName }}",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color(0xFF666666),
                         fontSize = 14.sp
