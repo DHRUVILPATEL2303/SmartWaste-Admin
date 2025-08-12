@@ -5,6 +5,7 @@ import com.example.smartwaste_admin.common.ResultState
 import com.example.smartwaste_admin.data.models.RouteProgressModel
 import com.example.smartwaste_admin.domain.repo.routeprogressrepositry.RouteProgressRepositry
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
@@ -32,6 +33,12 @@ class RouteProgressRepositryImpl @Inject constructor(
                         }
                     }
             } catch (e: Exception) {
+                trySend(ResultState.Error(e.message.toString()))
+
+            }
+
+            awaitClose {
+                close()
             }
         }
 

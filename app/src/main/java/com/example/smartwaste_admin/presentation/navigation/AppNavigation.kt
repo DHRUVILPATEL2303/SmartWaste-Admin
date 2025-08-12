@@ -34,6 +34,7 @@ import com.example.smartwaste_admin.presentation.screens.areascreens.AddAreaScre
 import com.example.smartwaste_admin.presentation.screens.holidayscreens.AddHolidayScreenUI
 import com.example.smartwaste_admin.presentation.screens.holidayscreens.HolidayScreenUI
 import com.example.smartwaste_admin.presentation.screens.reportscreens.ReportScreenUI
+import com.example.smartwaste_admin.presentation.screens.routeprogressscreens.RouteProgressScreenUI
 import com.example.smartwaste_admin.presentation.screens.routesscreen.AddRouteScreenUI
 import com.example.smartwaste_admin.presentation.screens.routesscreen.RouteDetailsScreenUI
 import com.example.smartwaste_admin.presentation.screens.trucksscreens.AddTruckScreenUI
@@ -119,7 +120,7 @@ fun AppNavigation() {
         ) {
             composable<Routes.HomeScreen> { HomeScreenUI(navController=navController) }
             composable<Routes.ReportsScreen> { ReportScreenUI(navController=navController) }
-            composable<Routes.AssignedTrucksScreen> { AssignedTrucksScreenUI(navController) }
+            composable<Routes.AssignedTrucksScreen> { RouteProgressScreenUI(navController=navController) }
             composable<Routes.HolidaysScreen> { HolidayScreenUI(navController=navController) }
             composable<Routes.NotificationsScreen> { NotificationsScreenUI(navController) }
             composable<Routes.ExtraServicesScreen> { ExtraServicesScreenUI(navController) }
@@ -140,10 +141,6 @@ fun AppNavigation() {
 
 
 
-@Composable
-fun AssignedTrucksScreenUI(navController: NavHostController) {
-    Text("Assigned Trucks Screen")
-}
 
 
 @Composable

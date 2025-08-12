@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.smartwaste_admin.common.ResultState
 import com.example.smartwaste_admin.data.models.RouteProgressModel
 import com.example.smartwaste_admin.domain.usecases.routeprogressusecase.GetAllRoutesProgressUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
+@HiltViewModel
 class RouteProgressViewModel @Inject constructor(
     private val getAllRoutesProgressUseCase: GetAllRoutesProgressUseCase
 ) : ViewModel(){
