@@ -7,4 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface RouteProgressRepositry {
 
     suspend fun getAllRoutesProgress() : Flow<ResultState<List<RouteProgressModel>>>
+
+    suspend fun forceResetAllRoutes(): Flow<ResultState<Unit>>
 }

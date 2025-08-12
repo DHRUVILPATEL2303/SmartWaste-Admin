@@ -40,263 +40,324 @@ fun RouteProgressScreenUI(
     navController: NavHostController
 ) {
     val routeProgressState by viewModel.routeProgressState.collectAsStateWithLifecycle()
+    val resetState by viewModel.resetRouteProgressState.collectAsStateWithLifecycle()
 
+    // UI-specific states
     var selectedFilter by remember { mutableStateOf("All") }
     var showFilterMenu by remember { mutableStateOf(false) }
     var expandedRouteId by remember { mutableStateOf<String?>(null) }
+    var showResetDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+
+    LaunchedEffect(resetState) {
+        if (resetState.success != null) {
+            snackbarHostState.showSnackbar("Routes reset successfully!")
+            viewModel.getAllRoutesProgress() // Automatically refresh the list
+            viewModel.onResetActionConsumed() // Reset the action state in the ViewModel
+        }
+        if (resetState.error.isNotEmpty()) {
+            snackbarHostState.showSnackbar("Error: ${resetState.error}")
+            viewModel.onResetActionConsumed() // Reset the action state
+        }
+    }
+
 
     LaunchedEffect(Unit) {
         viewModel.getAllRoutesProgress()
 
-        // Auto refresh every 30 seconds
         kotlinx.coroutines.delay(30000)
         viewModel.getAllRoutesProgress()
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFF8F9FA),
-                        Color(0xFFE9ECEF)
-                    )
-                )
-            )
-    ) {
-        TopAppBar(
-            title = {
-                Column {
-                    Text(
-                        text = "Route Progress",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                    Text(
-                        text = "Live tracking • Updated now",
-                        fontSize = 12.sp,
-                        color = Color(0xFF6C757D)
-                    )
+
+    if (showResetDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetDialog = false },
+            title = { Text("Confirm Reset") },
+            text = { Text("Are you sure you want to reset all route progress? This action cannot be undone.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.resetRouteProgress()
+                        showResetDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    if (resetState.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+                    } else {
+                        Text("Reset")
+                    }
                 }
             },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-                titleContentColor = Color(0xFF2E7D32)
-            ),
-            actions = {
-                IconButton(onClick = { viewModel.getAllRoutesProgress() }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = "Refresh",
-                        tint = Color(0xFF2E7D32)
-                    )
+            dismissButton = {
+                TextButton(onClick = { showResetDialog = false }) {
+                    Text("Cancel")
                 }
+            }
+        )
+    }
 
-                Box {
-                    IconButton(onClick = { showFilterMenu = true }) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFFF8F9FA),
+                            Color(0xFFE9ECEF)
+                        )
+                    )
+                )
+        ) {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text(
+                            text = "Route Progress",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                        val date = SimpleDateFormat("EEEE, d MMMM", Locale.getDefault()).format(Date())
+                        Text(
+                            text = date, // Display current date
+                            fontSize = 12.sp,
+                            color = Color(0xFF6C757D)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = Color(0xFF2E7D32)
+                ),
+                actions = {
+                    IconButton(onClick = { showResetDialog = true }) {
                         Icon(
-                            Icons.Default.FilterList,
-                            contentDescription = "Filter",
+                            Icons.Default.RestartAlt, // A suitable icon for reset
+                            contentDescription = "Reset Routes",
+                            tint = Color(0xFFD32F2F) // Red color for a destructive action
+                        )
+                    }
+
+                    IconButton(onClick = { viewModel.getAllRoutesProgress() }) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = "Refresh",
                             tint = Color(0xFF2E7D32)
                         )
                     }
 
-                    DropdownMenu(
-                        expanded = showFilterMenu,
-                        onDismissRequest = { showFilterMenu = false }
-                    ) {
-                        listOf("All", "In Progress", "Completed", "Not Started").forEach { filter ->
-                            DropdownMenuItem(
-                                text = { Text(filter) },
-                                onClick = {
-                                    selectedFilter = filter
-                                    showFilterMenu = false
-                                },
-                                leadingIcon = {
-                                    if (selectedFilter == filter) {
-                                        Icon(Icons.Default.Check, contentDescription = null)
-                                    }
-                                }
+                    Box {
+                        IconButton(onClick = { showFilterMenu = true }) {
+                            Icon(
+                                Icons.Default.FilterList,
+                                contentDescription = "Filter",
+                                tint = Color(0xFF2E7D32)
                             )
                         }
-                    }
-                }
-            }
-        )
 
-        routeProgressState.success?.let { routes ->
-            val totalRoutes = routes.size
-            val completedRoutes = routes.count { it.isRouteCompleted }
-            val inProgressRoutes = routes.count { route ->
-                !route.isRouteCompleted && route.areaProgress.any { it.isCompleted }
-            }
-            val notStartedRoutes = routes.count { route ->
-                !route.isRouteCompleted && route.areaProgress.none { it.isCompleted }
-            }
-
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                item {
-                    StatCard(
-                        title = "Total Routes",
-                        count = totalRoutes,
-                        icon = Icons.Default.Route,
-                        color = Color(0xFF1976D2),
-                        gradient = listOf(Color(0xFF1976D2), Color(0xFF1565C0))
-                    )
-                }
-                item {
-                    StatCard(
-                        title = "In Progress",
-                        count = inProgressRoutes,
-                        icon = Icons.Default.Pending,
-                        color = Color(0xFFFF9800),
-                        gradient = listOf(Color(0xFFFF9800), Color(0xFFFF8F00))
-                    )
-                }
-                item {
-                    StatCard(
-                        title = "Completed",
-                        count = completedRoutes,
-                        icon = Icons.Default.CheckCircle,
-                        color = Color(0xFF4CAF50),
-                        gradient = listOf(Color(0xFF4CAF50), Color(0xFF43A047))
-                    )
-                }
-                item {
-                    StatCard(
-                        title = "Not Started",
-                        count = notStartedRoutes,
-                        icon = Icons.Default.Schedule,
-                        color = Color(0xFF757575),
-                        gradient = listOf(Color(0xFF757575), Color(0xFF616161))
-                    )
-                }
-            }
-        }
-
-        when {
-            routeProgressState.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator(
-                            color = Color(0xFF2E7D32),
-                            strokeWidth = 3.dp,
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Loading route progress...",
-                            fontSize = 16.sp,
-                            color = Color(0xFF6C757D)
-                        )
-                    }
-                }
-            }
-
-            routeProgressState.error.isNotEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            Icons.Default.Error,
-                            contentDescription = null,
-                            tint = Color(0xFFE57373),
-                            modifier = Modifier.size(64.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Failed to load routes",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF424242)
-                        )
-                        Text(
-                            text = routeProgressState.error,
-                            fontSize = 14.sp,
-                            color = Color(0xFF757575),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(horizontal = 32.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = { viewModel.getAllRoutesProgress() },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF2E7D32)
-                            )
+                        DropdownMenu(
+                            expanded = showFilterMenu,
+                            onDismissRequest = { showFilterMenu = false }
                         ) {
-                            Icon(Icons.Default.Refresh, contentDescription = null)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Try Again")
+                            listOf("All", "In Progress", "Completed", "Not Started").forEach { filter ->
+                                DropdownMenuItem(
+                                    text = { Text(filter) },
+                                    onClick = {
+                                        selectedFilter = filter
+                                        showFilterMenu = false
+                                    },
+                                    leadingIcon = {
+                                        if (selectedFilter == filter) {
+                                            Icon(Icons.Default.Check, contentDescription = null)
+                                        }
+                                    }
+                                )
+                            }
                         }
+                    }
+                }
+            )
+
+
+            routeProgressState.success?.let { routes ->
+                val totalRoutes = routes.size
+                val completedRoutes = routes.count { it.isRouteCompleted }
+                val inProgressRoutes = routes.count { route ->
+                    !route.isRouteCompleted && route.areaProgress.any { it.isCompleted }
+                }
+                val notStartedRoutes = routes.count { route ->
+                    !route.isRouteCompleted && route.areaProgress.none { it.isCompleted }
+                }
+
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    item {
+                        StatCard(
+                            title = "Total Routes",
+                            count = totalRoutes,
+                            icon = Icons.Default.Route,
+                            color = Color(0xFF1976D2),
+                            gradient = listOf(Color(0xFF1976D2), Color(0xFF1565C0))
+                        )
+                    }
+                    item {
+                        StatCard(
+                            title = "In Progress",
+                            count = inProgressRoutes,
+                            icon = Icons.Default.Pending,
+                            color = Color(0xFFFF9800),
+                            gradient = listOf(Color(0xFFFF9800), Color(0xFFFF8F00))
+                        )
+                    }
+                    item {
+                        StatCard(
+                            title = "Completed",
+                            count = completedRoutes,
+                            icon = Icons.Default.CheckCircle,
+                            color = Color(0xFF4CAF50),
+                            gradient = listOf(Color(0xFF4CAF50), Color(0xFF43A047))
+                        )
+                    }
+                    item {
+                        StatCard(
+                            title = "Not Started",
+                            count = notStartedRoutes,
+                            icon = Icons.Default.Schedule,
+                            color = Color(0xFF757575),
+                            gradient = listOf(Color(0xFF757575), Color(0xFF616161))
+                        )
                     }
                 }
             }
 
-            else -> {
-                val filteredRoutes = routeProgressState.success?.let { routes ->
-                    when (selectedFilter) {
-                        "Completed" -> routes.filter { it.isRouteCompleted }
-                        "In Progress" -> routes.filter { route ->
-                            !route.isRouteCompleted && route.areaProgress.any { it.isCompleted }
+            when {
+                routeProgressState.isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator(
+                                color = Color(0xFF2E7D32),
+                                strokeWidth = 3.dp,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Loading route progress...",
+                                fontSize = 16.sp,
+                                color = Color(0xFF6C757D)
+                            )
                         }
-                        "Not Started" -> routes.filter { route ->
-                            !route.isRouteCompleted && route.areaProgress.none { it.isCompleted }
-                        }
-                        else -> routes
                     }
-                } ?: emptyList()
+                }
 
-                if (filteredRoutes.isEmpty()) {
+                routeProgressState.error.isNotEmpty() -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
-                                Icons.Default.Route,
+                                Icons.Default.Error,
                                 contentDescription = null,
-                                tint = Color(0xFFBDBDBD),
-                                modifier = Modifier.size(80.dp)
+                                tint = Color(0xFFE57373),
+                                modifier = Modifier.size(64.dp)
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = if (selectedFilter == "All") "No routes found" else "No $selectedFilter routes",
+                                text = "Failed to load routes",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF757575)
+                                color = Color(0xFF424242)
                             )
                             Text(
-                                text = "Routes will appear here once they are created",
+                                text = routeProgressState.error,
                                 fontSize = 14.sp,
-                                color = Color(0xFF9E9E9E)
+                                color = Color(0xFF757575),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 32.dp)
                             )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(
+                                onClick = { viewModel.getAllRoutesProgress() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF2E7D32)
+                                )
+                            ) {
+                                Icon(Icons.Default.Refresh, contentDescription = null)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Try Again")
+                            }
                         }
                     }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(filteredRoutes) { route ->
-                            RouteProgressCard(
-                                route = route,
-                                isExpanded = expandedRouteId == route.routeId,
-                                onExpandClick = {
-                                    expandedRouteId = if (expandedRouteId == route.routeId) null else route.routeId
-                                }
-                            )
+                }
+
+                else -> {
+                    val filteredRoutes = routeProgressState.success?.let { routes ->
+                        when (selectedFilter) {
+                            "Completed" -> routes.filter { it.isRouteCompleted }
+                            "In Progress" -> routes.filter { route ->
+                                !route.isRouteCompleted && route.areaProgress.any { it.isCompleted }
+                            }
+                            "Not Started" -> routes.filter { route ->
+                                !route.isRouteCompleted && route.areaProgress.none { it.isCompleted }
+                            }
+                            else -> routes
+                        }
+                    } ?: emptyList()
+
+                    if (filteredRoutes.isEmpty()) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    Icons.Default.Route,
+                                    contentDescription = null,
+                                    tint = Color(0xFFBDBDBD),
+                                    modifier = Modifier.size(80.dp)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = if (selectedFilter == "All") "No routes found" else "No $selectedFilter routes",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFF757575)
+                                )
+                                Text(
+                                    text = "Routes will appear here once they are created",
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF9E9E9E)
+                                )
+                            }
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(filteredRoutes) { route ->
+                                RouteProgressCard(
+                                    route = route,
+                                    isExpanded = expandedRouteId == route.routeId,
+                                    onExpandClick = {
+                                        expandedRouteId = if (expandedRouteId == route.routeId) null else route.routeId
+                                    }
+                                )
+                            }
                         }
                     }
                 }

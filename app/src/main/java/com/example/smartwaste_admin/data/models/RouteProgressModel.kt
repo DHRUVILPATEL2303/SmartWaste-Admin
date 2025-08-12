@@ -1,5 +1,7 @@
 package com.example.smartwaste_admin.data.models
 
+import com.google.firebase.firestore.PropertyName
+
 
 data class RouteProgressModel(
     val routeId: String = "",
@@ -8,6 +10,8 @@ data class RouteProgressModel(
     val assignedDriverId: String = "",
     val assignedTruckId: String = "",
     val areaProgress: List<AreaProgress> = emptyList(),
+
+
     val isRouteCompleted: Boolean = false,
     val lastUpdated: Long = System.currentTimeMillis()
 )
