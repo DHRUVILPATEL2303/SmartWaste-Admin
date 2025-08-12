@@ -45,7 +45,6 @@ fun RouteProgressScreenUI(
     var showFilterMenu by remember { mutableStateOf(false) }
     var expandedRouteId by remember { mutableStateOf<String?>(null) }
 
-    // Auto-refresh every 30 seconds
     LaunchedEffect(Unit) {
         viewModel.getAllRoutesProgress()
 
@@ -66,7 +65,6 @@ fun RouteProgressScreenUI(
                 )
             )
     ) {
-        // Top App Bar
         TopAppBar(
             title = {
                 Column {
@@ -87,7 +85,6 @@ fun RouteProgressScreenUI(
                 titleContentColor = Color(0xFF2E7D32)
             ),
             actions = {
-                // Refresh Button
                 IconButton(onClick = { viewModel.getAllRoutesProgress() }) {
                     Icon(
                         Icons.Default.Refresh,
@@ -96,7 +93,6 @@ fun RouteProgressScreenUI(
                     )
                 }
 
-                // Filter Button
                 Box {
                     IconButton(onClick = { showFilterMenu = true }) {
                         Icon(
@@ -129,7 +125,6 @@ fun RouteProgressScreenUI(
             }
         )
 
-        // Statistics Cards
         routeProgressState.success?.let { routes ->
             val totalRoutes = routes.size
             val completedRoutes = routes.count { it.isRouteCompleted }
@@ -185,7 +180,6 @@ fun RouteProgressScreenUI(
             }
         }
 
-        // Content Area
         when {
             routeProgressState.isLoading -> {
                 Box(
@@ -381,7 +375,6 @@ private fun RouteProgressCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -419,7 +412,6 @@ private fun RouteProgressCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Progress Bar
             Column {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -466,7 +458,6 @@ private fun RouteProgressCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Team Info
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -491,7 +482,6 @@ private fun RouteProgressCard(
                 )
             }
 
-            // Expandable Area Details
             AnimatedVisibility(
                 visible = isExpanded,
                 enter = expandVertically() + fadeIn(),
@@ -518,7 +508,6 @@ private fun RouteProgressCard(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Last Updated
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
