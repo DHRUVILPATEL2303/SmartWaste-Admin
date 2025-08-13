@@ -1,6 +1,8 @@
 package com.example.smartwaste_admin.domain.di
 
+import com.example.smartwaste_admin.data.models.ExtraServiceModel
 import com.example.smartwaste_admin.data.repoimpl.arearepositryimpl.AreaRepositryImpl
+import com.example.smartwaste_admin.data.repoimpl.extraservicerepoimpl.ExtraServiceRepositryImpl
 import com.example.smartwaste_admin.data.repoimpl.holidayrepositryimpl.HolidayRepositryImpl
 import com.example.smartwaste_admin.data.repoimpl.reportrepositryimpl.ReportRepositryImpl
 import com.example.smartwaste_admin.data.repoimpl.residencerepoimpl.ResidentRepositoryImpl
@@ -9,6 +11,7 @@ import com.example.smartwaste_admin.data.repoimpl.routerepoimpl.RoutesRepositryI
 import com.example.smartwaste_admin.data.repoimpl.truckrepoimpl.TruckRepositryImpl
 import com.example.smartwaste_admin.data.repoimpl.workerrepoimpl.WorkersRepositryImpl
 import com.example.smartwaste_admin.domain.repo.arearepo.AreaRepositry
+import com.example.smartwaste_admin.domain.repo.extraservicerepo.ExtraServiceRepositry
 import com.example.smartwaste_admin.domain.repo.holidayrepo.HolidayRepositry
 import com.example.smartwaste_admin.domain.repo.reportrepo.ReportRepositry
 import com.example.smartwaste_admin.domain.repo.residentrepo.ResidentRepository
@@ -59,6 +62,11 @@ abstract class DomainModule{
     @Singleton
     @Binds
     abstract fun bindUseCase7(RepositryImpl: RouteProgressRepositryImpl): RouteProgressRepositry
+
+    @Singleton
+    @Binds
+    abstract fun bindUseCase8(RepositryImpl: ExtraServiceRepositryImpl): ExtraServiceRepositry
+
 
 
 

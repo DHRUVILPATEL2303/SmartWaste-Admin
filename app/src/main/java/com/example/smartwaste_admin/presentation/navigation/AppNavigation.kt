@@ -31,6 +31,7 @@ import com.example.bottombar.model.IndicatorDirection
 import com.example.bottombar.model.IndicatorStyle
 import com.example.smartwaste_admin.presentation.screens.Home.HomeScreenUI
 import com.example.smartwaste_admin.presentation.screens.areascreens.AddAreaScreenUI
+import com.example.smartwaste_admin.presentation.screens.extraservice.ExtraServiceScreenUI
 import com.example.smartwaste_admin.presentation.screens.holidayscreens.AddHolidayScreenUI
 import com.example.smartwaste_admin.presentation.screens.holidayscreens.HolidayScreenUI
 import com.example.smartwaste_admin.presentation.screens.reportscreens.ReportScreenUI
@@ -123,7 +124,7 @@ fun AppNavigation() {
             composable<Routes.AssignedTrucksScreen> { RouteProgressScreenUI(navController=navController) }
             composable<Routes.HolidaysScreen> { HolidayScreenUI(navController=navController) }
             composable<Routes.NotificationsScreen> { NotificationsScreenUI(navController) }
-            composable<Routes.ExtraServicesScreen> { ExtraServicesScreenUI(navController) }
+            composable<Routes.ExtraServicesScreen> { ExtraServiceScreenUI() }
 
             composable<Routes.AddTruckScreen> { AddTruckScreenUI(navController = navController) }
             composable<Routes.AddAreaScreen> { AddAreaScreenUI(navController = navController) }
@@ -148,10 +149,6 @@ fun NotificationsScreenUI(navController: NavHostController) {
     Text("Notifications Screen")
 }
 
-@Composable
-fun ExtraServicesScreenUI(navController: NavHostController) {
-    Text("Extra Services Screen")
-}
 
 
 

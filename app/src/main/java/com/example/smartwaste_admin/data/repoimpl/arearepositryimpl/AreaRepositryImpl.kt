@@ -46,21 +46,18 @@ class AreaRepositryImpl @Inject constructor(
     }
 
     override suspend fun addArea(area: AreaModel): ResultState<String> {
+        return try {
+            val docRef = firebaseFireStore.collection(AREA_PATH).document()
 
-        try {
-            firebaseFireStore.collection(AREA_PATH).document().set(
-                area.copy(
-                    areadId = firebaseFireStore.collection(AREA_PATH).document().id
-                )
-            ).await()
+            val areaWithId = area.copy(areadId = docRef.id)
 
+            // Save the area
+            docRef.set(areaWithId).await()
 
-            return ResultState.Success("added successfully")
+            ResultState.Success("Area added successfully")
         } catch (e: Exception) {
-            return ResultState.Error(e.message ?: "Unknown error")
-
+            ResultState.Error(e.message ?: "Unknown error")
         }
-
     }
 
 
