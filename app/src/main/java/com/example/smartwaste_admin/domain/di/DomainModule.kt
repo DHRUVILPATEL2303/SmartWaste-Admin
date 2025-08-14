@@ -4,6 +4,7 @@ import com.example.smartwaste_admin.data.models.ExtraServiceModel
 import com.example.smartwaste_admin.data.repoimpl.arearepositryimpl.AreaRepositryImpl
 import com.example.smartwaste_admin.data.repoimpl.extraservicerepoimpl.ExtraServiceRepositryImpl
 import com.example.smartwaste_admin.data.repoimpl.holidayrepositryimpl.HolidayRepositryImpl
+import com.example.smartwaste_admin.data.repoimpl.notificationrepoimpl.NotificationRepositryImpl
 import com.example.smartwaste_admin.data.repoimpl.reportrepositryimpl.ReportRepositryImpl
 import com.example.smartwaste_admin.data.repoimpl.residencerepoimpl.ResidentRepositoryImpl
 import com.example.smartwaste_admin.data.repoimpl.routeprogressrepoimpl.RouteProgressRepositryImpl
@@ -13,6 +14,7 @@ import com.example.smartwaste_admin.data.repoimpl.workerrepoimpl.WorkersRepositr
 import com.example.smartwaste_admin.domain.repo.arearepo.AreaRepositry
 import com.example.smartwaste_admin.domain.repo.extraservicerepo.ExtraServiceRepositry
 import com.example.smartwaste_admin.domain.repo.holidayrepo.HolidayRepositry
+import com.example.smartwaste_admin.domain.repo.notificationrepo.NotificationRepositry
 import com.example.smartwaste_admin.domain.repo.reportrepo.ReportRepositry
 import com.example.smartwaste_admin.domain.repo.residentrepo.ResidentRepository
 import com.example.smartwaste_admin.domain.repo.routeprogressrepositry.RouteProgressRepositry
@@ -66,6 +68,10 @@ abstract class DomainModule{
     @Singleton
     @Binds
     abstract fun bindUseCase8(RepositryImpl: ExtraServiceRepositryImpl): ExtraServiceRepositry
+
+    @Singleton
+    @Binds
+    abstract fun bindUseCase9(RepositryImpl: NotificationRepositryImpl): NotificationRepositry
 
 
 

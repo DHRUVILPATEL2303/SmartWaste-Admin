@@ -45,6 +45,11 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes += "META-INF/DEPENDENCIES"
+        }
+    }
 }
 
 dependencies {
@@ -60,6 +65,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.material)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.inappmessaging.display)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -84,6 +91,8 @@ dependencies {
 
     implementation ("com.google.accompanist:accompanist-pager:0.34.0")
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.34.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
 
 
 
@@ -95,4 +104,7 @@ dependencies {
     implementation ("com.canopas.compose-animated-navigationbar:bottombar:1.0.1")
 
     implementation("androidx.compose.material:material-icons-extended-android:1.7.8")
+
+    implementation ("com.google.auth:google-auth-library-oauth2-http:1.3.0")
+
 }
