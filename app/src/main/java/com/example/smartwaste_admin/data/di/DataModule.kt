@@ -1,6 +1,8 @@
 package com.example.smartwaste_admin.data.di
 
 import android.content.Context
+import com.example.smartwaste_admin.domain.repo.notification_backend_repo.NotificationApi
+import com.example.smartwaste_admin.domain.repo.notification_backend_repo.RetrofitInstance
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -28,4 +30,11 @@ object DataModule {
     fun provideContext(
         @ApplicationContext context: Context
     ): Context = context
+
+    @Provides
+    @Singleton
+    fun provideApi(): NotificationApi {
+        return RetrofitInstance.api
+
+    }
 }

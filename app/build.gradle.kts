@@ -92,7 +92,8 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-pager:0.34.0")
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.34.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
 
 
@@ -106,5 +107,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended-android:1.7.8")
 
     implementation ("com.google.auth:google-auth-library-oauth2-http:1.3.0")
+
 
 }

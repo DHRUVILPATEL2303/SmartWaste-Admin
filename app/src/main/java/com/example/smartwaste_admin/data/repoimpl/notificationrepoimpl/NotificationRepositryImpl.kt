@@ -7,6 +7,8 @@ import com.example.smartwaste_admin.R
 import com.example.smartwaste_admin.common.FCM_PATH
 import com.example.smartwaste_admin.common.ResultState
 import com.example.smartwaste_admin.data.models.FcmModel
+import com.example.smartwaste_admin.domain.repo.notification_backend_repo.NotificationApi
+import com.example.smartwaste_admin.domain.repo.notification_backend_repo.NotificationRequest
 import com.example.smartwaste_admin.domain.repo.notificationrepo.NotificationRepositry
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,7 +27,8 @@ import javax.inject.Inject
 
 class NotificationRepositryImpl @Inject constructor(
     private val context: Context,
-    private val firebaseFirestore: FirebaseFirestore
+    private val firebaseFirestore: FirebaseFirestore,
+    private val api: NotificationApi
 ) : NotificationRepositry {
 
     private val client = OkHttpClient()
@@ -52,7 +55,11 @@ class NotificationRepositryImpl @Inject constructor(
                 getAccessToken()
                 val tokens = getAllTokens()
                 tokens.forEach { token ->
-                    sendNotification(token, title, message)
+                   api.sendNotification(
+                     token,
+                       title,
+                       message
+                   )
                 }
                 emit(ResultState.Success("Notifications sent successfully"))
             } catch (e: Exception) {
@@ -62,25 +69,25 @@ class NotificationRepositryImpl @Inject constructor(
         }
     }
 
-    suspend fun sendNotificationToUser(
-        userId: String,
-        title: String,
-        message: String
-    ): ResultState<String> {
-        return try {
-            getAccessToken()
-            val token = getUserFCM(userId)
-            return if (token != null) {
-                sendNotification(token, title, message)
-                ResultState.Success("Notification sent to user $userId")
-            } else {
-                ResultState.Error("FCM token not found for user $userId")
-            }
-        } catch (e: Exception) {
-            Log.e("NotificationRepo", "Error sending notification to user: ${e.message}", e)
-            ResultState.Error(e.message.toString())
-        }
-    }
+//    suspend fun sendNotificationToUser(
+//        userId: String,
+//        title: String,
+//        message: String
+//    ): ResultState<String> {
+//        return try {
+//            getAccessToken()
+//            val token = getUserFCM(userId)
+//            return if (token != null) {
+//                sendNotification(token, title, message)
+//                ResultState.Success("Notification sent to user $userId")
+//            } else {
+//                ResultState.Error("FCM token not found for user $userId")
+//            }
+//        } catch (e: Exception) {
+//            Log.e("NotificationRepo", "Error sending notification to user: ${e.message}", e)
+//            ResultState.Error(e.message.toString())
+//        }
+//    }
 
     private suspend fun getUserFCM(userId: String): String? {
         return try {
@@ -114,51 +121,51 @@ class NotificationRepositryImpl @Inject constructor(
         }
     }
 
-    private suspend fun sendNotification(token: String, title: String, message: String) {
-        val json = JSONObject().apply {
-            put("message", JSONObject().apply {
-                put("token", token)
-                put("notification", JSONObject().apply {
-                    put("title", title)
-                    put("body", message)
-
-                })
-                put("data", JSONObject().apply {
-                    put("title", title)
-                    put("body", message)
-
-                })
-                put("android", JSONObject().apply {
-                    put("priority", "high")
-                    put("notification", JSONObject().apply {
-                        put("icon", "ic_launcher_foreground")
-                        put("color", "#FF0000")
-                        put("sound", "default")
-
-                    })
-                })
-            })
-        }
-
-        val requestBody = json.toString()
-            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-
-        val request = Request.Builder()
-            .url(fcmUrl)
-            .post(requestBody)
-            .addHeader("Authorization", "Bearer $accessToken")
-            .build()
-
-        withContext(Dispatchers.IO) {
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful) {
-                Log.d(
-                    "NotificationRepo",
-                    "Notification sent successfully: ${response.body?.string()}"
-                )
-            } else {
-                Log.e("NotificationRepo", "Notification error: ${response.body?.string()}")
-            }
-        }
-    }
+//    private suspend fun sendNotification(token: String, title: String, message: String) {
+//        val json = JSONObject().apply {
+//            put("message", JSONObject().apply {
+//                put("token", token)
+//                put("notification", JSONObject().apply {
+//                    put("title", title)
+//                    put("body", message)
+//
+//                })
+//                put("data", JSONObject().apply {
+//                    put("title", title)
+//                    put("body", message)
+//
+//                })
+//                put("android", JSONObject().apply {
+//                    put("priority", "high")
+//                    put("notification", JSONObject().apply {
+//                        put("icon", "ic_launcher_foreground")
+//                        put("color", "#FF0000")
+//                        put("sound", "default")
+//
+//                    })
+//                })
+//            })
+//        }
+//
+//        val requestBody = json.toString()
+//            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+//
+//        val request = Request.Builder()
+//            .url(fcmUrl)
+//            .post(requestBody)
+//            .addHeader("Authorization", "Bearer $accessToken")
+//            .build()
+//
+//        withContext(Dispatchers.IO) {
+//            val response = client.newCall(request).execute()
+//            if (response.isSuccessful) {
+//                Log.d(
+//                    "NotificationRepo",
+//                    "Notification sent successfully: ${response.body?.string()}"
+//                )
+//            } else {
+//                Log.e("NotificationRepo", "Notification error: ${response.body?.string()}")
+//            }
+//        }
+//    }
 }
