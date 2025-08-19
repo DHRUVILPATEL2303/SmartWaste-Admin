@@ -1,4 +1,4 @@
-package com.example.smartwaste_admin.presentation.screens.Home
+package com.example.smartwaste_admin.presentation.screens.notificationscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

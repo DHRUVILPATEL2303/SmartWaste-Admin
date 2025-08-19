@@ -14,7 +14,6 @@ import androidx.navigation.toRoute
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -23,14 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.bottombar.AnimatedBottomBar
 import com.example.bottombar.components.BottomBarItem
 import com.example.bottombar.model.IndicatorDirection
 import com.example.bottombar.model.IndicatorStyle
 import com.example.smartwaste_admin.presentation.screens.Home.HomeScreenUI
-import com.example.smartwaste_admin.presentation.screens.Home.NotificationScreenUI
+import com.example.smartwaste_admin.presentation.screens.notificationscreen.NotificationScreenUI
 import com.example.smartwaste_admin.presentation.screens.areascreens.AddAreaScreenUI
 import com.example.smartwaste_admin.presentation.screens.extraservice.ExtraServiceScreenUI
 import com.example.smartwaste_admin.presentation.screens.holidayscreens.AddHolidayScreenUI

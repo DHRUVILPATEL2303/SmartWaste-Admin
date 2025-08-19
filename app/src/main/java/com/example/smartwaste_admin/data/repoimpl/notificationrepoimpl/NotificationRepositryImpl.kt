@@ -55,11 +55,8 @@ class NotificationRepositryImpl @Inject constructor(
                 getAccessToken()
                 val tokens = getAllTokens()
                 tokens.forEach { token ->
-                   api.sendNotification(
-                     token,
-                       title,
-                       message
-                   )
+                    sendNotification(token, title, message)
+
                 }
                 emit(ResultState.Success("Notifications sent successfully"))
             } catch (e: Exception) {
@@ -121,51 +118,51 @@ class NotificationRepositryImpl @Inject constructor(
         }
     }
 
-//    private suspend fun sendNotification(token: String, title: String, message: String) {
-//        val json = JSONObject().apply {
-//            put("message", JSONObject().apply {
-//                put("token", token)
-//                put("notification", JSONObject().apply {
-//                    put("title", title)
-//                    put("body", message)
-//
-//                })
-//                put("data", JSONObject().apply {
-//                    put("title", title)
-//                    put("body", message)
-//
-//                })
-//                put("android", JSONObject().apply {
-//                    put("priority", "high")
-//                    put("notification", JSONObject().apply {
-//                        put("icon", "ic_launcher_foreground")
-//                        put("color", "#FF0000")
-//                        put("sound", "default")
-//
-//                    })
-//                })
-//            })
-//        }
-//
-//        val requestBody = json.toString()
-//            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-//
-//        val request = Request.Builder()
-//            .url(fcmUrl)
-//            .post(requestBody)
-//            .addHeader("Authorization", "Bearer $accessToken")
-//            .build()
-//
-//        withContext(Dispatchers.IO) {
-//            val response = client.newCall(request).execute()
-//            if (response.isSuccessful) {
-//                Log.d(
-//                    "NotificationRepo",
-//                    "Notification sent successfully: ${response.body?.string()}"
-//                )
-//            } else {
-//                Log.e("NotificationRepo", "Notification error: ${response.body?.string()}")
-//            }
-//        }
-//    }
+    private suspend fun sendNotification(token: String, title: String, message: String) {
+        val json = JSONObject().apply {
+            put("message", JSONObject().apply {
+                put("token", token)
+                put("notification", JSONObject().apply {
+                    put("title", title)
+                    put("body", message)
+
+                })
+                put("data", JSONObject().apply {
+                    put("title", title)
+                    put("body", message)
+
+                })
+                put("android", JSONObject().apply {
+                    put("priority", "high")
+                    put("notification", JSONObject().apply {
+                        put("icon", "ic_launcher_foreground")
+                        put("color", "#FF0000")
+                        put("sound", "default")
+
+                    })
+                })
+            })
+        }
+
+        val requestBody = json.toString()
+            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(fcmUrl)
+            .post(requestBody)
+            .addHeader("Authorization", "Bearer $accessToken")
+            .build()
+
+        withContext(Dispatchers.IO) {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Log.d(
+                    "NotificationRepo",
+                    "Notification sent successfully: ${response.body?.string()}"
+                )
+            } else {
+                Log.e("NotificationRepo", "Notification error: ${response.body?.string()}")
+            }
+        }
+    }
 }
