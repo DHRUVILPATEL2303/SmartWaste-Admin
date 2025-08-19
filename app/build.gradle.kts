@@ -100,6 +100,7 @@ dependencies {
 
     // In build.gradle (module)
     implementation("androidx.compose.foundation:foundation:1.6.0")
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
 //    implementation("androidx.core:core-splashscreen:1.0.1")
 
