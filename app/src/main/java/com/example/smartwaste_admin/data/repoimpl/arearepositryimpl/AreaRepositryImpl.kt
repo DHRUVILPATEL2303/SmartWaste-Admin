@@ -4,6 +4,9 @@ import com.example.smartwaste_admin.common.AREA_PATH
 import com.example.smartwaste_admin.common.ResultState
 import com.example.smartwaste_admin.data.di.DataModule_ProvideFirebaseFireStoreFactory
 import com.example.smartwaste_admin.data.models.AreaModel
+import com.example.smartwaste_admin.data.models.NominatimPlace
+import com.example.smartwaste_admin.data.remote.NominatimApi
+import com.example.smartwaste_admin.data.remote.RetrofitInstance
 import com.example.smartwaste_admin.domain.repo.arearepo.AreaRepositry
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
@@ -15,6 +18,8 @@ import javax.inject.Inject
 class AreaRepositryImpl @Inject constructor(
     private val firebaseFireStore: FirebaseFirestore
 ) : AreaRepositry {
+
+    val retrofitInstane = RetrofitInstance
     override suspend fun getAllAreas(): Flow<ResultState<List<AreaModel>>> = callbackFlow {
 
         trySend(ResultState.Loading)
@@ -51,7 +56,6 @@ class AreaRepositryImpl @Inject constructor(
 
             val areaWithId = area.copy(areadId = docRef.id)
 
-            // Save the area
             docRef.set(areaWithId).await()
 
             ResultState.Success("Area added successfully")
@@ -60,8 +64,21 @@ class AreaRepositryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAddressDetails(query: String): Flow<ResultState<List<NominatimPlace>>> =callbackFlow{
+        trySend(ResultState.Loading)
 
+        try {
+            val data=retrofitInstane.api.searchPlace(query=query)
 
+            trySend(ResultState.Success(data))
+        }catch (e: Exception){
+            trySend(ResultState.Error(e.message.toString()))
+        }
+
+        awaitClose {
+            close()
+        }
+    }
 
 
 }

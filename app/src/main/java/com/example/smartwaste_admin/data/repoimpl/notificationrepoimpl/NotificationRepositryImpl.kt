@@ -99,7 +99,7 @@ class NotificationRepositryImpl @Inject constructor(
     private suspend fun getAccessToken() {
         withContext(Dispatchers.IO) {
             try {
-                val inputStream: InputStream = context.resources.openRawResource(R.raw.apikey)
+                val inputStream: InputStream = context.resources.openRawResource(com.google.firebase.R.raw.firebase_common_keep)
                 val credentials = GoogleCredentials.fromStream(inputStream)
                     .createScoped("https://www.googleapis.com/auth/firebase.messaging")
                 credentials.refresh()
