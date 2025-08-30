@@ -17,3 +17,5 @@ const val REPORT_PATH = "reports"
 const val EXTRA_SERVICE_PATH = "extra_services"
 
 const val FCM_PATH="fcm_tokens"
+
+const val EDITORIAL_PATH="ediorial"

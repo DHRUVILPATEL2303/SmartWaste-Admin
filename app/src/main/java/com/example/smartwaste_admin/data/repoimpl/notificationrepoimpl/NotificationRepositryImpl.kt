@@ -54,6 +54,7 @@ class NotificationRepositryImpl @Inject constructor(
             try {
                 getAccessToken()
                 val tokens = getAllTokens()
+                Log.d("NotificationRepo", "Tokens: $tokens")
                 tokens.forEach { token ->
                     sendNotification(token, title, message)
 
@@ -99,7 +100,7 @@ class NotificationRepositryImpl @Inject constructor(
     private suspend fun getAccessToken() {
         withContext(Dispatchers.IO) {
             try {
-                val inputStream: InputStream = context.resources.openRawResource(com.google.firebase.R.raw.firebase_common_keep)
+                val inputStream: InputStream = context.resources.openRawResource(R.raw.apikey)
                 val credentials = GoogleCredentials.fromStream(inputStream)
                     .createScoped("https://www.googleapis.com/auth/firebase.messaging")
                 credentials.refresh()
@@ -115,6 +116,8 @@ class NotificationRepositryImpl @Inject constructor(
         return withContext(Dispatchers.IO) {
             val snapshot = firebaseFirestore.collection(FCM_PATH).get().await()
             snapshot.documents.mapNotNull { it.getString("fcm_token") }
+
+
         }
     }
 

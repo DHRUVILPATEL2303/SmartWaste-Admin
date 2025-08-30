@@ -48,4 +48,7 @@ sealed class Routes {
 
     @Serializable
     object AddHolidayScreen
+
+    @Serializable
+    object  AddEditorialScreen
 }

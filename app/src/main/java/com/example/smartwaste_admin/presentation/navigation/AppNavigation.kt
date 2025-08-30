@@ -32,6 +32,7 @@ import com.example.bottombar.model.IndicatorStyle
 import com.example.smartwaste_admin.presentation.screens.Home.HomeScreenUI
 import com.example.smartwaste_admin.presentation.screens.Home.NotificationScreenUI
 import com.example.smartwaste_admin.presentation.screens.areascreens.AddAreaScreenUI
+import com.example.smartwaste_admin.presentation.screens.editorialscreen.AddEditorialScreenUI
 import com.example.smartwaste_admin.presentation.screens.extraservice.ExtraServiceScreenUI
 import com.example.smartwaste_admin.presentation.screens.holidayscreens.AddHolidayScreenUI
 import com.example.smartwaste_admin.presentation.screens.holidayscreens.HolidayScreenUI
@@ -136,6 +137,9 @@ fun AppNavigation() {
             composable<Routes.RouteDetailsScren> {
                 val data = it.toRoute<Routes.RouteDetailsScren>()
                 RouteDetailsScreenUI(routeId = data.routeId, navController = navController)
+            }
+            composable<Routes.AddEditorialScreen> {
+                AddEditorialScreenUI(navController=navController)
             }
         }
     }

@@ -99,7 +99,9 @@ class RoutesRepositryImpl @Inject constructor(
                 AreaProgress(
                     areaId = areaInfo.areaId,
                     areaName = areaInfo.areaName,
-                    isCompleted = false
+                    isCompleted = false,
+                    latitude = areaInfo.latitude,
+                    longitude = areaInfo.longitude
                 )
             },
             isRouteCompleted = false,

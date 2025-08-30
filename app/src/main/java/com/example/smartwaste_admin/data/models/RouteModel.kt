@@ -1,11 +1,15 @@
 package com.example.smartwaste_admin.data.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class AreaInfo(
     val areaId: String = "",
     val areaName: String = "",
     val latitude : Double = 0.0,
     val longitude : Double = 0.0
 )
+@Serializable
 data class RouteModel(
     val id: String = "",
     val name: String = "",
